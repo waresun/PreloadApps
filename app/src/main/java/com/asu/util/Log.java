@@ -1,4 +1,4 @@
-package com.thin.downloadmanager.util;
+package com.asu.util;
 
 public final class Log {
     private static String sTag = "ThinDownloadManager";

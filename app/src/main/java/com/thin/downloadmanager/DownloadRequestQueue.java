@@ -3,7 +3,7 @@ package com.thin.downloadmanager;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.thin.downloadmanager.util.Log;
+import com.asu.util.Log;
 
 import java.security.InvalidParameterException;
 import java.util.HashSet;
