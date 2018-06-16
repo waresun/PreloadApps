@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageInstaller;
 
-import com.asu.util.Log;
+import android.util.Log;
+
+import com.android.data.AppInfo;
+import com.android.task.TaskCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,36 +21,16 @@ import java.io.OutputStream;
 public class PackageInstallerService {
     static final String TAG = "PackageInstallerService";
     private static final String ACTION_INSTALL_COMPLETE = "ACTION_INSTALL_COMPLETE";
-    public static boolean installPackage(Context context,String path, String packageName)
+    public static boolean installPackage(Context context, String path, String packageName, AppInfo info, TaskCallback taskCallback)
             throws IOException {
         PackageInstaller packageInstaller = context.getPackageManager().getPackageInstaller();
-        packageInstaller.registerSessionCallback(new PackageInstaller.SessionCallback() {
-            @Override
-            public void onCreated(int i) {
-                Log.d(TAG, String.format("onCreated %d %B", i, true));
-            }
-            @Override
-            public void onBadgingChanged(int i) {
-            }
-            @Override
-            public void onActiveChanged(int i, boolean b) {
-                Log.d(TAG, String.format("onActiveChanged %d %B", i, b));
-            }
-            @Override
-            public void onProgressChanged(int i, float v) {
-                Log.d(TAG, String.format("onProgressChanged %d %f", i, v));
-            }
-            @Override
-            public void onFinished(int i, boolean b) {
-                Log.d(TAG, String.format("onFinished %d %B", i, b));
-            }
-        });
+        packageInstaller.registerSessionCallback(new MySessionCallback(path, info, taskCallback));
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         params.setAppPackageName(packageName);
         // set params
         final int sessionId = packageInstaller.createSession(params);
-        Log.d(TAG, String.format("DOWNLOADING %s", path));
+        Log.d(TAG, String.format("start install %s", path));
         final File file = new File(path);
         final InputStream in = new FileInputStream(file);
         final long sizeBytes = file.length();
@@ -77,6 +60,48 @@ public class PackageInstallerService {
         return pendingIntent.getIntentSender();
     }
 
+    private static final class MySessionCallback extends PackageInstaller.SessionCallback {
+
+        private String mPath;
+        private AppInfo mInfo;
+        private TaskCallback mCallback;
+        public MySessionCallback(String path, AppInfo info, TaskCallback taskCallback) {
+            mPath = path;
+            mInfo = info;
+            mCallback = taskCallback;
+        }
+        @Override
+        public void onCreated(int i) {
+
+        }
+
+        @Override
+        public void onBadgingChanged(int i) {
+
+        }
+
+        @Override
+        public void onActiveChanged(int i, boolean b) {
+
+        }
+
+        @Override
+        public void onProgressChanged(int i, float v) {
+
+        }
+
+        @Override
+        public void onFinished(int i, boolean b) {
+            Log.d(TAG, String.format("deleting %s after install %B", mPath, b));
+            File destinationFile = new File(mPath);
+            if (destinationFile.exists()) {
+                destinationFile.delete();
+            }
+            if (mCallback != null) {
+                mCallback.onInstallPackageDone(mInfo, b);
+            }
+        }
+    }
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

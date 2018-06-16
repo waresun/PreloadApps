@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.allapps;
+package com.android.ui.allapps;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.android.data.AppInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * The alphabetically sorted list of applications.
@@ -72,7 +67,6 @@ public class AlphabeticalAppsList {
 
     // The set of apps from the system not including predictions
     private final List<AppInfo> mApps = new ArrayList<>();
-    private final HashMap<String, AppInfo> mComponentToAppMap = new HashMap<>();
     // The set of filtered apps with the current filter
     private List<AppInfo> mFilteredApps = new ArrayList<>();
     // The current set of adapter items
@@ -133,7 +127,6 @@ public class AlphabeticalAppsList {
      * Sets the current set of apps.
      */
     public void setApps(List<AppInfo> apps) {
-        mComponentToAppMap.clear();
         addApps(apps);
     }
 
@@ -148,37 +141,27 @@ public class AlphabeticalAppsList {
      * Updates existing apps in the list
      */
     public void updateApps(List<AppInfo> apps) {
-        for (AppInfo app : apps) {
-            mComponentToAppMap.put(app.toComponentKey(), app);
-        }
-        onAppsUpdated();
-    }
-
-    /**
-     * Removes some apps from the list.
-     */
-    public void removeApps(List<AppInfo> apps) {
-        for (AppInfo app : apps) {
-            mComponentToAppMap.remove(app.toComponentKey());
-        }
-        onAppsUpdated();
-    }
-
-    /**
-     * Updates internals when the set of apps are updated.
-     */
-    private void onAppsUpdated() {
-        // Sort the list of apps
         mApps.clear();
-        mApps.addAll(mComponentToAppMap.values());
-                // Recompose the set of adapter items from the current set of apps
+        mApps.addAll(apps);
         updateAdapterItems();
     }
+    public void updateApp(AppInfo info) {
+        boolean hasUpdate = false;
+        int pos = 0;
+        for (AppInfo e : mApps) {
+            if (e.id == info.id) {
+                e.status = info.status;
+                e.progress = info.progress;
+                hasUpdate = true;
+                break;
+            }
+            pos++;
+        }
+        if (hasUpdate) {
+            mAdapter.notifyItemChanged(pos);
+        }
+    }
 
-    /**
-     * Updates the set of filtered apps with the current filter.  At this point, we expect
-     * mCachedSectionNames to have been calculated for the set of all apps in mApps.
-     */
     private void updateAdapterItems() {
         int position = 0;
         int appIndex = 0;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.launcher3.allapps;
+package com.android.ui.allapps;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,7 +25,6 @@ import android.widget.FrameLayout;
 
 import com.android.asustore.R;
 import com.android.data.AppInfo;
-import com.android.launcher3.BubbleTextView;
 
 import java.util.List;
 
@@ -71,27 +70,6 @@ public class AllAppsContainerView extends FrameLayout implements View.OnTouchLis
         mApps.setApps(apps);
     }
 
-    /**
-     * Adds new apps to the list.
-     */
-    public void addApps(List<AppInfo> apps) {
-        mApps.addApps(apps);
-    }
-
-    /**
-     * Updates existing apps in the list
-     */
-    public void updateApps(List<AppInfo> apps) {
-        mApps.updateApps(apps);
-    }
-
-    /**
-     * Removes some apps from the list.
-     */
-    public void removeApps(List<AppInfo> apps) {
-        mApps.removeApps(apps);
-    }
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -125,4 +103,7 @@ public class AllAppsContainerView extends FrameLayout implements View.OnTouchLis
         mListener = listener;
     }
     OnClickListener mListener;
+    public void updateItem(AppInfo info) {
+        mApps.updateApp(info);
+    }
 }

@@ -91,6 +91,8 @@ public class AppInfo {
     public int[] dropPos = null;
     public Bitmap iconBitmap;
 
+    public int status;
+    public int progress;
     public AppInfo() {
             }
 

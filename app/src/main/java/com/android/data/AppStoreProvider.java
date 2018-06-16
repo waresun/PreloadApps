@@ -331,6 +331,7 @@ public class AppStoreProvider extends ContentProvider {
                     " TEXT," +
                     "status INTEGER NOT NULL DEFAULT 0," +
                     "link TEXT," +
+                    "progress INTEGERNOT NULL DEFAULT 0," +
                     "pkg TEXT," +
                     "modified INTEGER NOT NULL DEFAULT 0," +
                     "restored INTEGER NOT NULL DEFAULT 0," +

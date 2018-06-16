@@ -201,6 +201,8 @@ public class AppStoreSettings {
         public static final int STATUS_TYPE_DOWNLOADED = 3;
         public static final int STATUS_TYPE_FAILED = 4;
         public static final int STATUS_TYPE_INSTALLED = 5;
+      public static final int STATUS_TYPE_INSTALLFAILED = 6;
+        public static final String PROGRESS = "progress";
         public static final String PKG = "pkg";
 
         /**

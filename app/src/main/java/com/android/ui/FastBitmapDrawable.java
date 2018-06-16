@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.launcher3;
+package com.android.ui;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

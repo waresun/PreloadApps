@@ -16,7 +16,7 @@
 -->
 <!-- Both android:focusable and android:focusableInTouchMode are needed for
      the view to get focus change events. -->
-<com.android.launcher3.allapps.AllAppsContainerView
+<com.android.ui.allapps.AllAppsContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto"
     android:id="@+id/apps_view"
@@ -35,4 +35,4 @@
         android:focusable="true"
         android:descendantFocusability="afterDescendants" />
 
-</com.android.launcher3.allapps.AllAppsContainerView>
+</com.android.ui.allapps.AllAppsContainerView>

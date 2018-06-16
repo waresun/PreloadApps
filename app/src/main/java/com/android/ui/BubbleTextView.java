@@ -1,4 +1,4 @@
-package com.android.launcher3;
+package com.android.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.android.data.AppInfo;
 
 import com.android.asustore.R;
+import com.android.data.AppStoreSettings;
+
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
  * because we want to make the bubble taller than the text and TextView's clip is
@@ -114,7 +116,13 @@ public class BubbleTextView extends TextView {
             iconDrawable.setState(FastBitmapDrawable.State.DISABLED);
         }
         setIcon(iconDrawable, mIconSize);
-        setText(info.title);
+        if (info.status == AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADING) {
+            setText(R.string.downloading);
+        } else if (info.status == AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADED){
+            setText(R.string.install);
+        } else {
+            setText(info.title);
+        }
         if (info.contentDescription != null) {
             setContentDescription(info.contentDescription);
         }

@@ -1,26 +1,24 @@
 package com.android.asustore;
 
-import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.android.data.AppInfo;
 import com.android.data.AppStoreSettings;
 import com.android.install.PackageInstallerService;
 import com.android.data.AppStoreApplicationState;
-import com.android.launcher3.allapps.AllAppsContainerView;
+import com.android.task.TaskCallback;
+import com.android.ui.allapps.AllAppsContainerView;
 import com.thin.downloadmanager.DefaultRetryPolicy;
-import com.thin.downloadmanager.DownloadManager;
 import com.thin.downloadmanager.DownloadRequest;
 import com.thin.downloadmanager.DownloadStatusListenerV1;
 import com.thin.downloadmanager.RetryPolicy;
@@ -32,54 +30,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, TaskCallback {
 
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }*/
+    private final static String TAG = "PreInstaller";
     private ThinDownloadManager downloadManager;
     private static final int DOWNLOAD_THREAD_POOL_SIZE = 4;
-
-    Button mDownload1;
-    Button mDownload2;
-    Button mDownload3;
-    Button mDownload4;
-    Button mDownload5;
-
-    Button mStartAll;
-    Button mCancelAll;
-    Button mListFiles;
-
-    ProgressBar mProgress1;
-    ProgressBar mProgress2;
-    ProgressBar mProgress3;
-    ProgressBar mProgress4;
-    ProgressBar mProgress5;
-
-    TextView mProgress1Txt;
-    TextView mProgress2Txt;
-    TextView mProgress3Txt;
-    TextView mProgress4Txt;
-    TextView mProgress5Txt;
-
-    private static final String FILE1 = "http://gdown.baidu.com/data/wisegame/eb3db6f16f10f7f5/UCliulanqi_982.apk";
-    private static final String FILE2 = "http://img.zcool.cn/community/0142135541fe180000019ae9b8cf86.jpg@1280w_1l_2o_100sh.png";
-    private static final String FILE3 = "http://img.zcool.cn/community/0142135541fe180000019ae9b8cf86.jpg@1280w_1l_2o_100sh.png";
-    private static final String FILE4 = "http://img.zcool.cn/community/0142135541fe180000019ae9b8cf86.jpg@1280w_1l_2o_100sh.png";
-    private static final String FILE5 = "http://img.zcool.cn/community/0142135541fe180000019ae9b8cf86.jpg@1280w_1l_2o_100sh.png";
-    private static final String FILE6 = "https://dl.dropboxusercontent.com/u/25887355/ThinDownloadManager.tar.gz";
+    AllAppsContainerView containerView;
 
     MyDownloadDownloadStatusListenerV1
-            myDownloadStatusListener = new MyDownloadDownloadStatusListenerV1();
+            myDownloadStatusListener = new MyDownloadDownloadStatusListenerV1(this);
 
-    int downloadId1;
-    int downloadId2;
-    int downloadId3;
-    int downloadId4;
-    int downloadId5;
-    int downloadId6;
     Handler mWorkerHandler;
     static final HandlerThread sWorkerThread = new HandlerThread("worker");
     static {
@@ -91,242 +51,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mWorkerHandler = new Handler(sWorkerThread.getLooper());
-                AppStoreApplicationState.getLauncherProvider().loadDefaultAPKsIfNecessary();
-        AllAppsContainerView containerView = (AllAppsContainerView) findViewById(R.id.apps_view);
+        AppStoreApplicationState.getLauncherProvider().loadDefaultAPKsIfNecessary();
+        containerView = (AllAppsContainerView) findViewById(R.id.apps_view);
         containerView.setOnClickListener(this);
         final Cursor c = getContentResolver().query(AppStoreSettings.APKs.CONTENT_URI, null, null, null, null);
         AppInfo info;
+        final int idIndex = c.getColumnIndexOrThrow
+                (AppStoreSettings.APKs._ID);
         final int titleIndex = c.getColumnIndexOrThrow
                 (AppStoreSettings.APKs.TITLE);
         final int pkgIndex = c.getColumnIndexOrThrow
                 (AppStoreSettings.APKs.PKG);
         final int linkIndex = c.getColumnIndexOrThrow
                 (AppStoreSettings.APKs.LINK);
+        final int statusIndex = c.getColumnIndexOrThrow
+                (AppStoreSettings.APKs.STATUS);
         List<AppInfo> list = new ArrayList<AppInfo>();
         while (c.moveToNext()) {
             info = new AppInfo();
+            info.id = c.getInt(idIndex);
             info.title = c.getString(titleIndex);
             info.pkgName = c.getString(pkgIndex);
             info.iconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
             info.link = c.getString(linkIndex);
+            info.status = c.getInt(statusIndex);
             list.add(info);
         }
         containerView.setApps(list);
 
-        mDownload1 = (Button) findViewById(R.id.button1);
-        mDownload2 = (Button) findViewById(R.id.button2);
-        mDownload3 = (Button) findViewById(R.id.button3);
-        mDownload4 = (Button) findViewById(R.id.button4);
-        mDownload5 = (Button) findViewById(R.id.button_download_headers);
-
-        mStartAll = (Button) findViewById(R.id.button5);
-        mCancelAll = (Button) findViewById(R.id.button6);
-        mListFiles = (Button) findViewById(R.id.button7);
-
-        mProgress1Txt = (TextView) findViewById(R.id.progressTxt1);
-        mProgress2Txt = (TextView) findViewById(R.id.progressTxt2);
-        mProgress3Txt = (TextView) findViewById(R.id.progressTxt3);
-        mProgress4Txt = (TextView) findViewById(R.id.progressTxt4);
-        mProgress5Txt = (TextView) findViewById(R.id.progressTxt5);
-
-        mProgress1 = (ProgressBar) findViewById(R.id.progress1);
-        mProgress2 = (ProgressBar) findViewById(R.id.progress2);
-        mProgress3 = (ProgressBar) findViewById(R.id.progress3);
-        mProgress4 = (ProgressBar) findViewById(R.id.progress4);
-        mProgress5 = (ProgressBar) findViewById(R.id.progress5);
-
-        mProgress1.setMax(100);
-        mProgress1.setProgress(0);
-
-        mProgress2.setMax(100);
-        mProgress2.setProgress(0);
-
-        mProgress3.setMax(100);
-        mProgress3.setProgress(0);
-
-        mProgress4.setMax(100);
-        mProgress4.setProgress(0);
-
-        mProgress5.setMax(100);
-        mProgress5.setProgress(0);
-
         downloadManager = new ThinDownloadManager(DOWNLOAD_THREAD_POOL_SIZE);
         RetryPolicy retryPolicy = new DefaultRetryPolicy();
-
-        File filesDir = getExternalFilesDir("");
-
-        Uri downloadUri = Uri.parse(FILE1);
-        Uri destinationUri = Uri.parse(filesDir+"/uc.apk");
-        final DownloadRequest downloadRequest1 = new DownloadRequest(downloadUri)
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.LOW)
-                .setRetryPolicy(retryPolicy)
-                .setDownloadContext("Download1")
-                .setStatusListener(myDownloadStatusListener);
-
-        downloadUri = Uri.parse(FILE2);
-        destinationUri = Uri.parse(filesDir+"/test_photo2.jpg");
-        final DownloadRequest downloadRequest2 = new DownloadRequest(downloadUri)
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.LOW)
-                .setDownloadContext("Download2")
-                .setStatusListener(myDownloadStatusListener);
-
-        downloadUri = Uri.parse(FILE3);
-        destinationUri = Uri.parse(filesDir+"/test_song.mp3");
-        final DownloadRequest downloadRequest3 = new DownloadRequest(downloadUri)
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
-                .setDownloadContext("Download3")
-                .setStatusListener(myDownloadStatusListener);
-
-        downloadUri = Uri.parse(FILE4);
-        destinationUri = Uri.parse(filesDir+"/mani/test/aaa/test_video.mp4");
-        // Define a custom retry policy
-        retryPolicy = new DefaultRetryPolicy(5000, 3, 2f);
-        final DownloadRequest downloadRequest4 = new DownloadRequest(downloadUri)
-                .setRetryPolicy(retryPolicy)
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
-                .setDownloadContext("Download4")
-                .setStatusListener(myDownloadStatusListener);
-
-        downloadUri = Uri.parse(FILE5);
-        destinationUri = Uri.parse(filesDir+"/headers.json");
-        final DownloadRequest downloadRequest5 = new DownloadRequest(downloadUri)
-                .addCustomHeader("Auth-Token", "myTokenKey")
-                .addCustomHeader("User-Agent", "Thin/Android")
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
-                .setDownloadContext("Download5")
-                .setStatusListener(myDownloadStatusListener);
-
-        downloadUri = Uri.parse(FILE6);
-        destinationUri = Uri.parse(filesDir+"/wtfappengine.zip");
-        final DownloadRequest downloadRequest6 = new DownloadRequest(downloadUri)
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
-                .setDownloadContext("Download6")
-                .setStatusListener(myDownloadStatusListener);
-
-        mDownload1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("TEST", "SHIt");
-                AppStoreApplicationState.getLauncherProvider().loadDefaultAPKsIfNecessary();
-                if (true) return;
-                mWorkerHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            PackageInstallerService.installPackage(MainActivity.this, "/storage/emulated/0/uc.apk", "com.android.settings");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, 1000);
-                if (downloadManager.query(downloadId1) == DownloadManager.STATUS_NOT_FOUND) {
-                    downloadId1 = downloadManager.add(downloadRequest1);
-                }
-            }
-        });
-
-        mDownload2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (downloadManager.query(downloadId2) == DownloadManager.STATUS_NOT_FOUND) {
-                    downloadId2 = downloadManager.add(downloadRequest2);
-                }
-            }
-        });
-
-        mDownload3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (downloadManager.query(downloadId3) == DownloadManager.STATUS_NOT_FOUND) {
-                    downloadId3 = downloadManager.add(downloadRequest3);
-                }
-            }
-        });
-
-        mDownload4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (downloadManager.query(downloadId4) == DownloadManager.STATUS_NOT_FOUND) {
-                    downloadId4 = downloadManager.add(downloadRequest4);
-                }
-            }
-        });
-
-        mDownload5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //if (downloadManager.query(downloadId5) == DownloadManager.STATUS_NOT_FOUND) {
-                //    downloadId5 = downloadManager.add(downloadRequest5);
-                //}
-
-                if (downloadManager.query(downloadId6) == DownloadManager.STATUS_NOT_FOUND) {
-                    downloadId6 = downloadManager.add(downloadRequest6);
-                }
-
-            }
-        });
-
-        mStartAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadManager.cancelAll();
-                downloadId1 = downloadManager.add(downloadRequest1);
-                downloadId2 = downloadManager.add(downloadRequest2);
-                downloadId3 = downloadManager.add(downloadRequest3);
-                downloadId4 = downloadManager.add(downloadRequest4);
-                downloadId5 = downloadManager.add(downloadRequest5);
-            }
-        });
-
-        mCancelAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadManager.cancelAll();
-            }
-        });
-
-        mListFiles.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                showInternalFilesDir();
-            }
-        });
-
-        mProgress1Txt.setText("Download1");
-        mProgress2Txt.setText("Download2");
-        mProgress3Txt.setText("Download3");
-        mProgress4Txt.setText("Download4");
-        mProgress5Txt.setText("Download5");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("######## onDestroy ######## ");
+        mHandler.removeCallbacksAndMessages(null);
+        mWorkerHandler.removeCallbacksAndMessages(null);
         downloadManager.release();
-    }
-
-    private void showInternalFilesDir() {
-        File internalFile = new File(getExternalFilesDir("").getPath());
-        File files[] = internalFile.listFiles();
-        StringBuilder contentText = new StringBuilder();
-        if( files.length == 0 ) {
-            contentText = new StringBuilder("No Files Found");
-        }
-
-        for (File file : files) {
-            contentText.append(file.getName()).append(" ").append(file.length()).append(" \n\n ");
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        AlertDialog internalCacheDialog = builder.create();
-        LayoutInflater inflater = internalCacheDialog.getLayoutInflater();
-        View dialogLayout = inflater.inflate(R.layout.layout_files, null);
-        TextView content = (TextView) dialogLayout.findViewById(R.id.filesList);
-        content.setText(contentText.toString());
-
-        builder.setView(dialogLayout);
-        builder.show();
-
     }
 
     @Override
@@ -340,72 +103,130 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         File filesDir = getExternalFilesDir("");
 
         Uri downloadUri = Uri.parse(info.link);
-        Uri destinationUri = Uri.parse(filesDir+"/uc.apk");
+        String fileName = String.format("/%s.apk", info.pkgName);
+        Uri destinationUri = Uri.parse(filesDir+fileName);
         final DownloadRequest downloadRequest1 = new DownloadRequest(downloadUri)
                 .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.LOW)
                 .setRetryPolicy(retryPolicy)
-                .setDownloadContext("Download1")
+                .setDownloadContext(info)
                 .setStatusListener(myDownloadStatusListener);
         downloadManager.add(downloadRequest1);
     }
 
+    @Override
+    public void onDownloadDone(AppInfo info, int status, int progress) {
+        info.status = status;
+        info.progress = progress;
+        Message msg = mHandler.obtainMessage(MSG_STATUS, info);
+        mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void onInstallPackageDone(AppInfo info, Boolean result) {
+        Log.e(TAG, String.format("pgk name %s install %B", info.pkgName, result));
+        info.status = result ? AppStoreSettings.APKs.STATUS_TYPE_INSTALLED : AppStoreSettings.APKs.STATUS_TYPE_INSTALLFAILED;
+        info.progress = 100;
+        Message msg = mHandler.obtainMessage(MSG_STATUS, info);
+        mHandler.sendMessage(msg);
+        ContentValues values = new ContentValues();
+        values.put(AppStoreSettings.APKs.STATUS, result ? AppStoreSettings.APKs.STATUS_TYPE_INSTALLED : AppStoreSettings.APKs.STATUS_TYPE_INSTALLFAILED);
+
+        String[] pkgParams = new String[] { info.pkgName };
+
+        final ContentResolver cr = getContentResolver();
+        int ret = cr.update(AppStoreSettings.APKs.CONTENT_URI, values,
+                "pkg=?", pkgParams);
+        Log.e(TAG, String.format("failed install %s %d", info.pkgName, ret));
+    }
+
     class MyDownloadDownloadStatusListenerV1 implements DownloadStatusListenerV1 {
 
+        private int oldProgress = 0;
+        private TaskCallback callback;
+        public MyDownloadDownloadStatusListenerV1(TaskCallback callback) {
+            this.callback = callback;
+        }
         @Override
         public void onDownloadComplete(final DownloadRequest request) {
-            mWorkerHandler.postDelayed(new Runnable() {
+            mWorkerHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        Log.e("TEST", "to install " + request.getDestinationURI().getPath());
-                        PackageInstallerService.installPackage(MainActivity.this, request.getDestinationURI().getPath(), "com.UCMobile");
+                        AppInfo info = (AppInfo) request.getDownloadContext();
+                        if (callback != null) {
+                            callback.onDownloadDone(info, AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADED, 0);
+                        }
+                        ContentValues values = new ContentValues();
+                        values.put(AppStoreSettings.APKs.STATUS, AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADED);
+
+                        String[] pkgParams = new String[] { info.pkgName };
+
+                        final ContentResolver cr = getContentResolver();
+                        int result = cr.update(AppStoreSettings.APKs.CONTENT_URI, values,
+                                "pkg=?", pkgParams);
+                        Log.e(TAG, String.format("done download %s %d", info.pkgName, result));
+                        PackageInstallerService.installPackage(MainActivity.this
+                                , request.getDestinationURI().getPath(), info.pkgName, info, MainActivity.this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-            }, 1000);
+            });
         }
 
         @Override
         public void onDownloadFailed(DownloadRequest request, int errorCode, String errorMessage) {
-            final int id = request.getDownloadId();
-            if (id == downloadId1) {
-                mProgress1Txt.setText("Download1 id: "+id+" Failed: ErrorCode "+errorCode+", "+errorMessage);
-                mProgress1.setProgress(0);
-            } else if (id == downloadId2) {
-                mProgress2Txt.setText("Download2 id: "+id+" Failed: ErrorCode "+errorCode+", "+errorMessage);
-                mProgress2.setProgress(0);
-
-            } else if (id == downloadId3) {
-                mProgress3Txt.setText("Download3 id: "+id+" Failed: ErrorCode "+errorCode+", "+errorMessage);
-                mProgress3.setProgress(0);
-
-            } else if (id == downloadId4) {
-                mProgress4Txt.setText("Download4 id: "+id+" Failed: ErrorCode "+errorCode+", "+errorMessage);
-                mProgress4.setProgress(0);
-            } else if (id == downloadId5) {
-                mProgress5Txt.setText("Download5 id: "+id+" Failed: ErrorCode "+errorCode+", "+errorMessage);
-                mProgress5.setProgress(0);
+            AppInfo info = (AppInfo) request.getDownloadContext();
+            if (callback != null) {
+                callback.onDownloadDone(info, AppStoreSettings.APKs.STATUS_TYPE_FAILED, 0);
             }
+            ContentValues values = new ContentValues();
+            values.put(AppStoreSettings.APKs.STATUS, AppStoreSettings.APKs.STATUS_TYPE_FAILED);
+
+            String[] pkgParams = new String[] { info.pkgName };
+
+            final ContentResolver cr = getContentResolver();
+            int result = cr.update(AppStoreSettings.APKs.CONTENT_URI, values,
+                    "pkg=?", pkgParams);
+            Log.e(TAG, String.format("failed download %s %d", info.pkgName, result));
         }
 
         @Override
         public void onProgress(DownloadRequest request, long totalBytes, long downloadedBytes, int progress) {
             int id = request.getDownloadId();
-            System.out.println("######## onProgress ###### "+id+" : "+totalBytes+" : "+downloadedBytes+" : "+progress);
+            AppInfo info = (AppInfo) request.getDownloadContext();
+            if (callback != null) {
+                callback.onDownloadDone(info, AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADING, progress);
+            }
+            if (progress - oldProgress < 5) {
+                return;
+            }
+            oldProgress = progress;
+            ContentValues values = new ContentValues();
+            values.put(AppStoreSettings.APKs.PROGRESS, progress);
+            values.put(AppStoreSettings.APKs.STATUS, AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADING);
+
+            String[] pkgParams = new String[] { info.pkgName };
+
+            final ContentResolver cr = getContentResolver();
+            int result = cr.update(AppStoreSettings.APKs.CONTENT_URI, values,
+                    "pkg=?", pkgParams);
+            Log.e(TAG, String.format("download %s %d %d", info.pkgName, result, progress));
         }
     }
-
-    private String getBytesDownloaded(int progress, long totalBytes) {
-        //Greater than 1 MB
-        long bytesCompleted = (progress * totalBytes)/100;
-        if (totalBytes >= 1000000) {
-            return (""+(String.format("%.1f", (float)bytesCompleted/1000000))+ "/"+ ( String.format("%.1f", (float)totalBytes/1000000)) + "MB");
-        } if (totalBytes >= 1000) {
-            return (""+(String.format("%.1f", (float)bytesCompleted/1000))+ "/"+ ( String.format("%.1f", (float)totalBytes/1000)) + "Kb");
-
-        } else {
-            return ( ""+bytesCompleted+"/"+totalBytes );
+    private static final int MSG_STATUS = 100;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_STATUS:
+                    if (containerView != null) {
+                        containerView.updateItem((AppInfo)msg.obj);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
-    }
+    };
 }
