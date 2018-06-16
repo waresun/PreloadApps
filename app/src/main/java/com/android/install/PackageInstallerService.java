@@ -24,7 +24,7 @@ public class PackageInstallerService {
     public static boolean installPackage(Context context, String path, String packageName, AppInfo info, TaskCallback taskCallback)
             throws IOException {
         PackageInstaller packageInstaller = context.getPackageManager().getPackageInstaller();
-        packageInstaller.registerSessionCallback(new MySessionCallback(path, info, taskCallback));
+        packageInstaller.registerSessionCallback(new MySessionCallback(context, path, info, taskCallback));
         PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
                 PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         params.setAppPackageName(packageName);
@@ -61,11 +61,12 @@ public class PackageInstallerService {
     }
 
     private static final class MySessionCallback extends PackageInstaller.SessionCallback {
-
+        private Context context;
         private String mPath;
         private AppInfo mInfo;
         private TaskCallback mCallback;
-        public MySessionCallback(String path, AppInfo info, TaskCallback taskCallback) {
+        public MySessionCallback(Context context, String path, AppInfo info, TaskCallback taskCallback) {
+            this.context = context;
             mPath = path;
             mInfo = info;
             mCallback = taskCallback;
@@ -100,6 +101,7 @@ public class PackageInstallerService {
             if (mCallback != null) {
                 mCallback.onInstallPackageDone(mInfo, b);
             }
+            context.getPackageManager().getPackageInstaller().unregisterSessionCallback(this);
         }
     }
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {

@@ -17,8 +17,10 @@ package com.android.ui.allapps;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.android.data.AppInfo;
+import com.android.data.AppStoreSettings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,14 +150,14 @@ public class AlphabeticalAppsList {
     public void updateApp(AppInfo info) {
         boolean hasUpdate = false;
         int pos = 0;
-        for (AppInfo e : mApps) {
-            if (e.id == info.id) {
-                e.status = info.status;
-                e.progress = info.progress;
+        for (AdapterItem e : mAdapterItems) {
+            if (e.appInfo.pkgName.equals(info.pkgName)) {
+                e.appInfo.status = info.status;
+                e.appInfo.progress = info.progress;
+                pos = e.position;
                 hasUpdate = true;
                 break;
             }
-            pos++;
         }
         if (hasUpdate) {
             mAdapter.notifyItemChanged(pos);
