@@ -2,19 +2,19 @@ package com.android.data;
 
 import android.content.Context;
 
-import com.novoda.android.AppListItem;
-import com.novoda.android.AppListParser;
-import com.novoda.android.Icon;
-import com.novoda.android.Link;
-import com.novoda.android.PkgName;
-import com.novoda.android.Title;
-import com.novoda.sexp.Instigator;
-import com.novoda.sexp.RootTag;
-import com.novoda.sexp.SimpleEasyXmlParser;
-import com.novoda.sexp.SimpleTagInstigator;
-import com.novoda.sexp.finder.ElementFinder;
-import com.novoda.sexp.finder.ElementFinderFactory;
-import com.novoda.sexp.parser.ParseFinishWatcher;
+import com.parser.android.AppListItem;
+import com.parser.android.AppListParser;
+import com.parser.android.Icon;
+import com.parser.android.Link;
+import com.parser.android.PkgName;
+import com.parser.android.Title;
+import com.parser.sexp.Instigator;
+import com.parser.sexp.RootTag;
+import com.parser.sexp.SimpleEasyXmlParser;
+import com.parser.sexp.SimpleTagInstigator;
+import com.parser.sexp.finder.ElementFinder;
+import com.parser.sexp.finder.ElementFinderFactory;
+import com.parser.sexp.parser.ParseFinishWatcher;
 import com.android.asustore.R;
 
 public class DefaultXMLLoader {

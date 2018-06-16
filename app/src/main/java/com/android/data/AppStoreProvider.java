@@ -19,8 +19,8 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.novoda.android.AppItem;
-import com.novoda.android.AppListItem;
+import com.parser.android.AppItem;
+import com.parser.android.AppListItem;
 
 
 import java.util.ArrayList;
