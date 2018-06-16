@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -31,13 +32,11 @@ import java.util.List;
 
 public class DownloadService extends Service implements TaskCallback {
     public static final String TAG = "DownloadService";
-    private static final int DOWNLOAD_THREAD_POOL_SIZE = 4;
+    private static final int DOWNLOAD_THREAD_POOL_SIZE = 2;
+    private static final int MSG_QUIT = 100;
     private IDownloadCallBack mDownloadCallback = null;
     Handler mWorkerHandler;
-    static final HandlerThread sWorkerThread = new HandlerThread("DownloadService");
-    static {
-        sWorkerThread.start();
-    }
+    HandlerThread sWorkerThread = null;
     private IBinder.DeathRecipient deathRecipient = new IBinder.DeathRecipient() {
 
         @Override
@@ -51,7 +50,7 @@ public class DownloadService extends Service implements TaskCallback {
     private IDownloadService.Stub mService = new IDownloadService.Stub() {
         @Override
         public void startDownloadTask(String pkg) throws RemoteException {
-            final Cursor c = getContentResolver().query(AppStoreSettings.APKs.CONTENT_URI, null, null, null, null);
+            final Cursor c = getContentResolver().query(AppStoreSettings.APKs.CONTENT_URI, null, "pkg=?", new String[] { pkg }, null);
             AppInfo info;
             final int idIndex = c.getColumnIndexOrThrow
                     (AppStoreSettings.APKs._ID);
@@ -119,7 +118,22 @@ public class DownloadService extends Service implements TaskCallback {
     @Override
     public void onCreate() {
         super.onCreate();
-        mWorkerHandler = new Handler(sWorkerThread.getLooper());
+        sWorkerThread = new HandlerThread("DownloadService");
+        sWorkerThread.start();
+        mWorkerHandler = new Handler(sWorkerThread.getLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MSG_QUIT:
+                        if (!downloadManager.isRunning() && mDownloadCallback == null) {
+                            stopSelf();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
         downloadManager = new ThinDownloadManager(DOWNLOAD_THREAD_POOL_SIZE);
         retryPolicy = new DefaultRetryPolicy();
     }
@@ -140,12 +154,25 @@ public class DownloadService extends Service implements TaskCallback {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        if (downloadManager != null && !downloadManager.isRunning()) {
+            stopSelf();
+        }
+        return super.onUnbind(intent);
+    }
+
+    @Override
     public void onDownloadDone(AppInfo info, int status, int progress) {
         if (mDownloadCallback != null) {
             try {
                 mDownloadCallback.onDownloadDone(info.pkgName, status, progress);
             } catch (RemoteException e) {
                 e.printStackTrace();
+            }
+        }
+        if (status == AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADFAILED) {
+            if (!mWorkerHandler.hasMessages(MSG_QUIT)) {
+                mWorkerHandler.sendEmptyMessageDelayed(MSG_QUIT, 10000);
             }
         }
     }
@@ -169,6 +196,9 @@ public class DownloadService extends Service implements TaskCallback {
         final ContentResolver cr = getContentResolver();
         cr.update(AppStoreSettings.APKs.CONTENT_URI, values,
                 "pkg=?", pkgParams);
+        if (!mWorkerHandler.hasMessages(MSG_QUIT)) {
+            mWorkerHandler.sendEmptyMessageDelayed(MSG_QUIT, 10000);
+        }
     }
 
     class MyDownloadDownloadStatusListenerV1 implements DownloadStatusListenerV1 {

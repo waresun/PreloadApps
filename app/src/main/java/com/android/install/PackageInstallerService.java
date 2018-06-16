@@ -93,7 +93,6 @@ public class PackageInstallerService {
 
         @Override
         public void onFinished(int i, boolean b) {
-            Log.d(TAG, String.format("deleting %s after install %B", mPath, b));
             File destinationFile = new File(mPath);
             if (destinationFile.exists()) {
                 destinationFile.delete();

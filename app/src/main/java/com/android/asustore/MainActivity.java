@@ -2,34 +2,23 @@ package com.android.asustore;
 
 import android.app.Service;
 import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-
 import com.android.data.AppInfo;
 import com.android.data.AppStoreSettings;
 import com.android.data.AppStoreApplicationState;
 import com.android.ui.allapps.AllAppsContainerView;
-import com.thin.downloadmanager.DefaultRetryPolicy;
-import com.thin.downloadmanager.DownloadRequest;
-import com.thin.downloadmanager.RetryPolicy;
 import android.util.Log;
-
-import java.io.File;
-import com.android.asustore.IDownloadCallBack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("######## onDestroy ######## ");
+        Log.e(TAG, "######## onDestroy ######## ");
         if (mService != null) {
             try {
                 mService.unRegisterDownloadCallback();
@@ -151,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             return;
         }
-        Log.e("TEST", "link " + info.link);
+        Log.e("TEST", "link " + info.link + "pkg " + info.pkgName);
         if (mService != null) {
             try {
                 mService.startDownloadTask(info.pkgName);

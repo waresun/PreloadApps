@@ -76,6 +76,7 @@ class DownloadDispatcher extends Thread {
     private long mDownloadedCacheSize = 0;
 
     private Timer mTimer;
+    private boolean isRunning = true;
 
     /**
      * Constructor take the dependency (DownloadRequest queue) that all the Dispatcher needs
@@ -93,7 +94,9 @@ class DownloadDispatcher extends Thread {
         while (true) {
             DownloadRequest request = null;
             try {
+                isRunning = false;
                 request = mQueue.take();
+                isRunning = true;
                 mRedirectionCount = 0;
                 shouldAllowRedirects = true;
                 Log.v("Download initiated for " + request.getDownloadId());
@@ -110,6 +113,7 @@ class DownloadDispatcher extends Thread {
                         }
                     }
                     mTimer.cancel();
+                    isRunning = false;
                     return;
                 }
             }
@@ -469,5 +473,9 @@ class DownloadDispatcher extends Thread {
 
     private void updateDownloadProgress(DownloadRequest request, int progress, long downloadedBytes) {
         mDelivery.postProgressUpdate(request, mContentLength, downloadedBytes, progress);
+    }
+
+    public boolean isRunning() {
+        return isRunning && isAlive();
     }
 }

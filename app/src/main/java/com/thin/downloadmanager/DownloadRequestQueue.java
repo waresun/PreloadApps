@@ -312,10 +312,22 @@ public class DownloadRequestQueue {
 		}
 	}
 
-	/**
+	/**t s
 	 * Gets a sequence number.
 	 */
 	private int getDownloadId() {
 		return mSequenceGenerator.incrementAndGet();
+	}
+	public boolean isRunning() {
+		boolean isRunning = false;
+		for (int i = 0; i < mDownloadDispatchers.length; i++) {
+			if (mDownloadDispatchers[i] != null) {
+				isRunning = mDownloadDispatchers[i].isRunning();
+				if (isRunning) {
+					break;
+				}
+			}
+		}
+		return isRunning;
 	}
 }

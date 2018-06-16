@@ -137,6 +137,9 @@ public class ThinDownloadManager implements DownloadManager {
     private static void setLoggingEnabled(boolean enabled) {
         Log.setEnabled(enabled);
     }
+    public boolean isRunning() {
+        return mRequestQueue.isRunning();
+    }
 }
 
 
