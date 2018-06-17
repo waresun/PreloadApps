@@ -72,13 +72,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 (AppStoreSettings.APKs.LINK);
         final int statusIndex = c.getColumnIndexOrThrow
                 (AppStoreSettings.APKs.STATUS);
+        final int iconIndex = c.getColumnIndexOrThrow
+                (AppStoreSettings.APKs.ICON_RESOURCE);
         List<AppInfo> list = new ArrayList<AppInfo>();
         while (c.moveToNext()) {
             info = new AppInfo();
             info.id = c.getInt(idIndex);
             info.title = c.getString(titleIndex);
             info.pkgName = c.getString(pkgIndex);
-            info.iconBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            String icon = c.getString(iconIndex);
+            info.iconBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(icon, "drawable", this.getPackageName()));
             info.link = c.getString(linkIndex);
             info.status = c.getInt(statusIndex);
             list.add(info);
