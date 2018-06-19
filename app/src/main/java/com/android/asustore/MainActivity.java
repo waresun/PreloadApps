@@ -81,7 +81,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             info.title = c.getString(titleIndex);
             info.pkgName = c.getString(pkgIndex);
             String icon = c.getString(iconIndex);
-            info.iconBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(icon, "drawable", this.getPackageName()));
+            final int thumbRes = getResources().getIdentifier(icon, "drawable", this.getPackageName());
+            if (thumbRes != 0) {
+                info.iconBitmap = BitmapFactory.decodeResource(getResources(), thumbRes);
+            } else {
+                info.iconBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("icon1", "drawable", this.getPackageName()));
+            }
             info.link = c.getString(linkIndex);
             info.status = c.getInt(statusIndex);
             list.add(info);

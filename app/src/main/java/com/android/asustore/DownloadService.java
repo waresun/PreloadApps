@@ -77,7 +77,7 @@ public class DownloadService extends Service implements TaskCallback {
                 return;
             }
             info = list.get(0);
-            if (info.status >= AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADING) {
+            if (info.status == AppStoreSettings.APKs.STATUS_TYPE_DOWNLOADING) {
                 return;
             }
             File filesDir = getExternalFilesDir("");

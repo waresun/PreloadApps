@@ -1,46 +1,46 @@
 <appstore xmlns:android="http://schemas.android.com/apk/res/android">
     <applist>
         <item>
-            <title>UC浏览器</title>
-            <link>http://gdown.baidu.com/data/wisegame/eb3db6f16f10f7f5/UCliulanqi_982.apk</link>
-            <icon>icon1</icon>
-            <pkg>com.uc</pkg>
+            <title>宝宝爱吃饭</title>
+            <link>http://imtt.dd.qq.com/16891/ED0A03ED17F6678BDEE0F5C8313F684C.apk?fsname=com.sinyee.babybus.dining_9.25.10.00_9251000.apk</link>
+            <icon>bbacf</icon>
+            <pkg>com.sinyee.babybus.dining</pkg>
         </item>
         <item>
-            <title>QQ音乐</title>
-            <link>http://p.gdown.baidu.com/35e40f8cba69c7498c628fb7a41f3f3183c2c6cdcf70d7a5ca99d4a30a24ced11a6e0e593c25705da11517de08b83ff66ddc9812f5580b1f2d89cfd9f4bf41c5423f42d0d5a1168c8985456a4877d0608560f6bfa0c6a85da41e2aa6e4bedda3c1250aa4f4faf971ef9f1fd5fdf03073394c8e065d37a1cdfe6d30df5ce964f9376fa8d89b6c546840d5069b0f77f60362ca1b1344c144c397ac3d83207e6ca3ca69ba19956fcf37796d356352fe67d8</link>
-            <icon>icon1</icon>
-            <pkg>com.tencent.qqmusic</pkg>
+            <title>安慰小宝宝</title>
+            <link>http://imtt.dd.qq.com/16891/7D5EC6720492EDCD09A28ADAD034750E.apk?fsname=com.sinyee.babybus.wobunanguo_9.25.00.05_9250005.apk</link>
+            <icon>awbb</icon>
+            <pkg>com.sinyee.babybus.wobunanguo</pkg>
         </item>
         <item>
             <title>王者荣耀</title>
-            <link>http://p.gdown.baidu.com/491c9962b934cb06512b51a28fc2067944922c3793ad85c79a48233e7bb05c5dc37a92af4146304d2aca3682f059392a7ef62be024fa4242f450297c316e4a29eb7cbdb6181d53718e6f000c786866f3f204cf3251dde3a6bb8dd5146d8302b8b5af89c1b88afb039bfbb2ac426c9dd0ccbe511b89fddc4fbc835b482488c296ec6a121323b4dae52093102d7e6c0d3e2ff9b8e512157c5cc4e9716241b16e7d343bdeb619cc884ed7f47078bce964bd0ceb9c7c1f656ef7ed7005f01acaad87f894ae45733be9c66eae72897854068338e83b889c5c90a4ca01f0d36729d48dae68d061c0b93b46</link>
-            <icon>icon1</icon>
-            <pkg>com.uc2</pkg>
+            <link>http://imtt.dd.qq.com/16891/237C42F4E5D371FEE157C0439D529E82.apk?fsname=com.tencent.tmgp.sgame_1.34.1.23_34012305.apk</link>
+            <icon>wzry</icon>
+            <pkg>com.tencent.tmgp.sgame</pkg>
         </item>
         <item>
-            <title>爱奇艺</title>
-            <link>http://p.gdown.baidu.com/ac73c39f9d760962b2fa8ab44484da607031847dcfc7ff21125c70ae98ec09666d440bf9d95bce1da5b9b1b54725376dc3ec4732533eacd6a356c22201261f62b1a3374f3ee690f6e6e63724b49499730963cdf697164e396e053bc8efe8e11f47c1b0dd36c51d4ba4a42961c15038ed812b710394e8f0c850974d4f8e933e36dc22a37f1be283ad09b30c345247b179f35fdf1d909c5f217145bf7d5d83fb2369cbfd6a8ced2aba3966b607fba36455171a0e1490a80f939d61941e2725d4f73e93d412b3592a78c1a023b0ac998d368fc3267af9d1528738bc495ec4e8e7d95775b273213d50afc58f29b5df2eeb117df64468f0d10de43175cccc7a9a251d84a76a711f59e4d9c74d10a6add9d7bd4d763d08e7beaa9a55ce71ed585122d24399e99ae899b88407172ce1d2be24081cb612c4f6137c2c9303a8383beba488</link>
-            <icon>icon1</icon>
-            <pkg>com.qiyi.video</pkg>
+            <title>搜狐视频HD</title>
+            <link>http://imtt.dd.qq.com/16891/5ACCAA8D576E028FC85282ADB3469EF0.apk?fsname=com.sohu.tv_6.0.1_6010000.apk</link>
+            <icon>shsp</icon>
+            <pkg>com.sohu.tv</pkg>
         </item>
         <item>
-            <title>QQ浏览器</title>
-            <link>http://p.gdown.baidu.com/a22dc2efb0b1c816562068983ee05340c70ceb2da0287912837ff8e064b671a26f72e007c6e4eaa491739985c0b8d8986c7532bcdc7d86563c6396dca5777b7d54af9d46127785f506f980f9418483af7fbcbfda2241c46053d32dbb52c130f8712f626cbd5c0b3f24a9641204c31a99aa8551fc9a9f6e7cc58f29b5df2eeb11e751cff1d1a9d6d1a0f69d347cecc2147861a1c6c2ea74698b5d66dd8c57eccaf17ce6d9bb330e5eb43f0756745156a2182f8c022c1a1a5016baea43fc94275cb72cf88c6c0d9e6ee82853f46cf3aace</link>
-            <icon>icon1</icon>
-            <pkg>com.tencent.mtt</pkg>
+            <title>爱奇艺视频HD</title>
+            <link>http://imtt.dd.qq.com/16891/7550040362313A155C0F4364B6F7322D.apk?fsname=com.qiyi.video.pad_7.0.2_80702.apk</link>
+            <icon>aqy</icon>
+            <pkg>com.qiyi.video.pad</pkg>
         </item>
         <item>
-            <title>支付宝</title>
-            <link>http://p.gdown.baidu.com/3b88ffae5681a7045816664da4b4f2a5a6235f5f18718e7ea7c0fcd5c8ba641f571d6f95c68b1dc5c6f82228de8ad90b7c618b13b57a14ebfd33b86f7c832fc41771e48898d84380306c9a130ce8762b6bce388c4c2e719db6441c38510e694b608ce4ff41a607137b5f52664d4733c1b444f724fc19fba7432089c2eed383cbc97f6a7a362a820d20345e55cc4d7b0b0a3d95be93a675320f5d2aff7460c4f844ae77f3c8602e6c16ebe5db31600b72c1250aa4f4faf971fa56a6a056e3df747cc947459ed9aa3c101ef19ac915746a08bc0b3cf5d2c2b79a84176d2d82052452b9535bafbd3e7983d3759d008b0754e3ae96d393c3c8201bae23b0b35f4715</link>
-            <icon>icon1</icon>
-            <pkg>com.eg.android.AlipayGphone</pkg>
+            <title>搜狗浏览器</title>
+            <link>http://imtt.dd.qq.com/16891/E6948F1FFC2937822687FF8E9E83A4A0.apk?fsname=sogou.mobile.explorer_5.13.5_154189.apk</link>
+            <icon>sgllq</icon>
+            <pkg>sogou.mobile.explorer</pkg>
         </item>
         <item>
-            <title>应用宝</title>
-            <link>http://p.gdown.baidu.com/642db1b8ea0fd2a573b746884b97aed8d122620926f250da9a561f98e2515c3679a3be432ef801f8bde764bb0e11bb66fc6f155368346016109e82667a8d26f94b113d19d10bba55cdae1f9fd3763cae248a822d3258072c78abd4bdcd2212988b2c88b7c213f3d813809f8c37646b6b62dbad05f8c57c4a684a7cd9124f468a1ac723740eece5c1b926c4111165a64d4b8e9eee0cca3e53ae51979d9c05610206835f1dd1a53c9b6d659060b659b72cc291e084d0faa5ba2445c53b22015b0d</link>
-            <icon>icon1</icon>
-            <pkg>com.tencent.android.qqdownloader</pkg>
+            <title>宝宝爱洗澡</title>
+            <link>http://imtt.dd.qq.com/16891/8985A62DA0DFE5413424F4ED29D21ED6.apk?fsname=com.sinyee.babybus.bathing_9.25.00.07_9250007.apk</link>
+            <icon>bbaxz</icon>
+            <pkg>com.sinyee.babybus.bathing</pkg>
         </item>
     </applist>
 </appstore>
